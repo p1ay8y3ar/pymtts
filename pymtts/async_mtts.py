@@ -1,4 +1,3 @@
-
 from .tools import MttsLangModel
 from aiohttp import ClientSession
 from .tools import get_connect_id, TOKEN_URL, LANG_MODEL_URL, FIRST_JSON, SECOND_JSON, THIRD_SSML, WSS_CONNECT_URL
@@ -6,10 +5,9 @@ from .tools import get_time
 import re
 from .tools import MttsException
 import json
-from typing import List
 import websockets as ws
 from websockets import ConnectionClosed
-import asyncio
+from typing import List
 
 
 class Mtts:
@@ -52,12 +50,14 @@ class Mtts:
          get all support voice models
         :return: list
         '''
-        headers = {"authorization": 'Bearer {}'.format(self.token)}
-        async with ClientSession(headers=headers) as session:
-            async with session.get(self._lang_model_url) as response:
-                response = await response.read()
-                data = json.loads(response)
-                self.lang_models.extend([MttsLangModel(m) for m in data])
+        if len(self.lang_models) == 0:
+            headers = {"authorization": 'Bearer {}'.format(self.token)}
+            async with ClientSession(headers=headers) as session:
+                async with session.get(self._lang_model_url) as response:
+                    response = await response.read()
+                    data = json.loads(response)
+                    self.lang_models.extend([MttsLangModel(m) for m in data])
+
         return self.lang_models
 
     @token_check

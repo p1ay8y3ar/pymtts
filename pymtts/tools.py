@@ -14,7 +14,7 @@ class MttsLangModel:
 
     def __init__(self, arg: dict):
         for key, value in arg.items():
-            setattr(MttsLangModel, key, value)
+            setattr(self, key, value)
 
     def keys(self):
         return (

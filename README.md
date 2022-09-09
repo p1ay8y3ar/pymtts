@@ -18,5 +18,5 @@ mp3_bytes_buffer = await mtts.mtts("欢迎使用pymtts","zh-CN-YunxiNeural", 'ge
 ```python
 from pymtts import async_Mtts
 mtts = async_Mtts()
-models= mtts.get_lang_models()
+models= await mtts.get_lang_models()
 ```

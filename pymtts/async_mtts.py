@@ -1,6 +1,6 @@
 from .tools import MttsLangModel
 from aiohttp import ClientSession
-from .tools import get_connect_id, TOKEN_URL, LANG_MODEL_URL, FIRST_JSON, SECOND_JSON, THIRD_SSML, WSS_CONNECT_URL
+from .tools import gen_connect_id, TOKEN_URL, LANG_MODEL_URL, FIRST_JSON, SECOND_JSON, THIRD_SSML, WSS_CONNECT_URL
 from .tools import get_time
 import re
 from .tools import MttsException
@@ -9,17 +9,19 @@ import websockets as ws
 from websockets import ConnectionClosed
 from typing import List
 import asyncio
+import warnings
 
 
 class Mtts:
-    connection_id: str = get_connect_id()
-    token: str = None
+    connection_id: str = gen_connect_id()
+    token: str = None  #
     _token_url: str = TOKEN_URL
     _lang_model_url: str = LANG_MODEL_URL
     lang_models: List[MttsLangModel] = []
     SpeechSDK_VERSION: str = "1.19.0"
 
     async def get_token(self) -> None:
+        warnings.warn("this function is not use anymore", DeprecationWarning)
         async with ClientSession() as session:
             async with session.get(self._token_url) as response:
                 response = await response.read()
@@ -30,6 +32,8 @@ class Mtts:
                 self.token = token.split("token: ")[1].replace('"', '')
 
     def token_check(func):
+        warnings.warn("this function is not use anymore", DeprecationWarning)
+
         async def wrapper(self, *args, **kwargs):
             if self.token is None:
                 await self.get_token()
@@ -45,15 +49,14 @@ class Mtts:
 
         return wrapper
 
-    @token_check
     async def get_lang_models(self) -> list:
         '''
          get all support voice models
         :return: list
         '''
         if len(self.lang_models) == 0:
-            headers = {"authorization": 'Bearer {}'.format(self.token)}
-            async with ClientSession(headers=headers) as session:
+            # headers = {"authorization": 'Bearer {}'.format(self.token)}
+            async with ClientSession() as session:
                 async with session.get(self._lang_model_url) as response:
                     response = await response.read()
                     data = json.loads(response)
@@ -61,7 +64,7 @@ class Mtts:
 
         return self.lang_models
 
-    @token_check
+
     async def mtts(self, text: str, short_name: str, style: str = "general", rate: int = 0, pitch: int = 0,
                    kmhz: int = 24) -> bytes:
         '''
@@ -73,7 +76,7 @@ class Mtts:
         :param kmhz:
         :return: bytes,buffer of audio
         '''
-        async with ws.connect(WSS_CONNECT_URL.format(self.token, self.connection_id)) as websocket:
+        async with ws.connect(WSS_CONNECT_URL.format(self.connection_id)) as websocket:
 
             await websocket.send(FIRST_JSON.format(self.connection_id, get_time, self.SpeechSDK_VERSION))
             await websocket.send(SECOND_JSON.format(self.connection_id, get_time(), kmhz))

@@ -29,6 +29,7 @@ class MttsLangModel:
 class MttsException(Exception):
     pass
 
+
 from datetime import datetime
 import uuid
 
@@ -38,13 +39,13 @@ def get_time():
     return now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_connect_id():
-    return str(uuid.uuid4()).replace("-", "").upper()
+def gen_connect_id():
+    return uuid.uuid4().hex.upper()
 
 
 TOKEN_URL: str = "https://azure.microsoft.com/en-gb/services/cognitive-services/text-to-speech/"
-LANG_MODEL_URL: str = "https://eastus.tts.speech.microsoft.com/cognitiveservices/voices/list"
-WSS_CONNECT_URL: str = "wss://eastus.tts.speech.microsoft.com/cognitiveservices/websocket/v1?Authorization=bearer%20{}&X-ConnectionId={}"
+LANG_MODEL_URL: str = "https://eastus.api.speech.microsoft.com/cognitiveservices/voices/list"
+WSS_CONNECT_URL: str = "wss://eastus.api.speech.microsoft.com/cognitiveservices/websocket/v1?TrafficType=AzureDemo&Authorization=bearer%20undefined&X-ConnectionId={}"
 FIRST_JSON: str = '''Path: speech.config\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: application/json\r\n\r\n{{"context": {{"system": {{"name": "SpeechSDK","version": "{}","build": "JavaScript","lang": "JavaScript"}},"os": {{"platform": "Browser/MacIntel","name": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36","version": "5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36"}}}}}}'''
 
 SECOND_JSON: str = '''Path: synthesis.context\r\nX-RequestId: {}\r\nX-Timestamp: {}\r\nContent-Type: application/json\r\n\r\n{{"synthesis": {{"audio": {{"metadataOptions": {{"bookmarkEnabled": false,"sentenceBoundaryEnabled": false,"visemeEnabled": false,"wordBoundaryEnabled": false}},"outputFormat": "audio-{}khz-160kbitrate-mono-mp3"}},"language": {{"autoDetection": false}}}}}}'''

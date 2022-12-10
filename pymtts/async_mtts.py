@@ -1,3 +1,5 @@
+import random
+
 from .tools import MttsLangModel
 from aiohttp import ClientSession
 from .tools import gen_connect_id, TOKEN_URL, LANG_MODEL_URL, FIRST_JSON, SECOND_JSON, THIRD_SSML, WSS_CONNECT_URL
@@ -64,7 +66,6 @@ class Mtts:
 
         return self.lang_models
 
-
     async def mtts(self, text: str, short_name: str, style: str = "general", rate: int = 0, pitch: int = 0,
                    kmhz: int = 24) -> bytes:
         '''
@@ -76,7 +77,7 @@ class Mtts:
         :param kmhz:
         :return: bytes,buffer of audio
         '''
-        async with ws.connect(WSS_CONNECT_URL.format(self.connection_id)) as websocket:
+        async with ws.connect(WSS_CONNECT_URL.format(self.connection_id), extra_headers={'Origin':'https://azure.microsoft.com'}) as websocket:
 
             await websocket.send(FIRST_JSON.format(self.connection_id, get_time, self.SpeechSDK_VERSION))
             await websocket.send(SECOND_JSON.format(self.connection_id, get_time(), kmhz))

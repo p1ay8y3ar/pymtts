@@ -58,7 +58,7 @@ class Mtts:
         '''
         if len(self.lang_models) == 0:
             # headers = {"authorization": 'Bearer {}'.format(self.token)}
-            async with ClientSession() as session:
+            async with ClientSession(headers={'origin': 'https://azure.microsoft.com'}) as session:
                 async with session.get(self._lang_model_url) as response:
                     response = await response.read()
                     data = json.loads(response)
@@ -77,7 +77,8 @@ class Mtts:
         :param kmhz:
         :return: bytes,buffer of audio
         '''
-        async with ws.connect(WSS_CONNECT_URL.format(self.connection_id), extra_headers={'Origin':'https://azure.microsoft.com'}) as websocket:
+        async with ws.connect(WSS_CONNECT_URL.format(self.connection_id),
+                              extra_headers={'Origin': 'https://azure.microsoft.com'}) as websocket:
 
             await websocket.send(FIRST_JSON.format(self.connection_id, get_time, self.SpeechSDK_VERSION))
             await websocket.send(SECOND_JSON.format(self.connection_id, get_time(), kmhz))

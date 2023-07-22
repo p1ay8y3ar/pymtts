@@ -1,3 +1,5 @@
+# please use edge_tts
+
 # pymtts
 
 A python package for using Azure smart AI speech
